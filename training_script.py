@@ -7,7 +7,7 @@ from train import create_dataset, train_model
 
 input_size = (28, 28)
 
-x_train, x_val = create_dataset(numbers=[3])
+x_train, x_val = create_dataset()
 
 model = tf.keras.models.Sequential([
     layers.Conv2D(64, 7, activation='swish', padding='same', input_shape=(28, 28, 1), name='conv1'),
@@ -23,9 +23,10 @@ model = tf.keras.models.Sequential([
     layers.Dense(1, name='dense2', use_bias=False)
 ])
 
-train_model(model, x_train, x_val, batch_size=128, n_epochs=5,
-learning_rate=1e-6, reg_param=0, input_size=input_size,
-n_langevin_steps=10, step_size=0.001, n_samples=1, CD=True)
+optimizer = keras.optimizers.SGD(learning_rate=1e-3, clipvalue=0.1)
+
+train_model(model, x_train, x_val, batch_size=128, n_epochs=4, optimizer=optimizer, reg_param=1e-5, input_size=input_size,
+n_langevin_steps=100, step_size=0.01, n_samples=10, CD=False)
 
 # Get samples
 
