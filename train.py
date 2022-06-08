@@ -122,7 +122,3 @@ def train_model(model, x_train, input_size, batch_size, n_epochs,
 
             if step % 5 == 0:
                 print(f"\nStep {step+1}/{x_train.shape[0]//batch_size}")
-                relative_grad_diff = [(gb - gs)/(tf.math.abs(gb) + tf.math.abs(gs))
-                         for gb, gs in zip(grad_batch, grad_samples)]
-                print("Relative gradient difference per layer", 
-                    [tf.reduce_mean(g).numpy() for g in relative_grad_diff])
