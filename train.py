@@ -65,7 +65,7 @@ def langevin_samples(model, n_langevin_steps, step_size, n_samples, input_size, 
 
 def train_model(model, x_train, input_size, batch_size, n_epochs,
         optimizer, n_langevin_steps, step_size, n_samples, reg_param=0,
-        use_cd=False):
+        use_cd=False, print_grad=False):
     """
     Trains the model with the given parameters.
     _x_train: the training data
@@ -79,6 +79,7 @@ def train_model(model, x_train, input_size, batch_size, n_epochs,
     _use_cd: whether to use Contrastive Divergence. In this case,
     the Langevin samples are initialized using the data of the batch,
     and n_samples is set to batch_size.
+    _print_grad: whether to print the l2 norm of the gradient.
     """
     batches = tf.data.Dataset.from_tensor_slices(x_train)
     batches = batches.shuffle(buffer_size=x_train.shape[0])
@@ -122,3 +123,5 @@ def train_model(model, x_train, input_size, batch_size, n_epochs,
 
             if step % 5 == 0:
                 print(f"\nStep {step+1}/{x_train.shape[0]//batch_size}")
+                if print_grad:
+                    print("l2 norm gradient", [tf.norm(g).numpy() for g in gradients])

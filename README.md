@@ -65,7 +65,7 @@ Train the model with
 
 ```
 train_model(model, x_train, input_size, batch_size, n_epochs, #learning_rate,  
-        reg_param, optimizer, n_langevin_steps, step_size, n_samples, CD=False):
+        reg_param, optimizer, n_langevin_steps, step_size, n_samples, use_cd=False, print_grad=True):
 ```
 
 

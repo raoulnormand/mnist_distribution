@@ -11,7 +11,7 @@ from train import create_dataset, train_model
 # Data
 
 input_size = (28, 28)
-x_train, x_val = create_dataset()
+x_train, x_val = create_dataset(numbers=[3])
 
 # Model
 
@@ -31,7 +31,7 @@ optimizer = keras.optimizers.SGD(learning_rate=1e-2, clipvalue=0.1)
 
 train_model(model, x_train, batch_size=128, n_epochs=5, optimizer=optimizer, reg_param=1e-3,
         input_size=input_size,
-        n_langevin_steps=100, step_size=0.01, n_samples=10, use_cd=False)
+        n_langevin_steps=100, step_size=0.01, n_samples=10, use_cd=False, print_grad=True)
 
 # Get samples
 
@@ -39,4 +39,4 @@ import matplotlib.pyplot as plt
 from train import langevin_samples
 
 samples = langevin_samples(model, 100, 0.01, 1, input_size)
-plt.imshow(samples[0])
+plt.imshow(samples[0], cmap='gray')
