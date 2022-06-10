@@ -73,6 +73,21 @@ plt.imshow(samples[i], cmap='gray') #Where i is any number in range(n_samples).
 samples = sequential_langevin_samples(model, 20, 10, 0.01, input_size)
 ```
 
+## Training_script
+
+An example of a model with a training script to train the model on the number 3 is given in the training_script.py file.
+
+## Example
+
+A model trained on the number 3 is provided, see details in the example.md file. Here are some samples obtained:
+
+![5 samples of the number 3](/images/samples_3.png)
+
+And here are different steps of the Langevin dynamics:
+
+![Seqwuential samples](/images/sequential_samples.png)
+
+
 ## References
 <a id="1">[1]</a>
 http://www.deeplearningbook.org
