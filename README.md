@@ -73,7 +73,7 @@ plt.imshow(samples[i], cmap='gray') #Where i is any number in range(n_samples).
 samples = sequential_langevin_samples(model, 20, 10, 0.01, input_size)
 ```
 
-## Training_script
+## Training script
 
 An example of a model with a training script to train the model on the number 3 is given in the training_script.py file.
 
