@@ -37,51 +37,41 @@ The train.py module contains the main functions to train the model and get sampl
 x_train, x_val = create_dataset(numbers)
 ```
 
-where `numbers` is an optional argument describing which parts of the dataset to load. For instance, `numbers=[5, 7]` loads only images of 5 and 7. This defaults to None to load the whole dataset. Smaller datasets require less training and hyperparameter tweaking. Note than an extra dimension is added in order to use CNN in keras.
+where `numbers` is an optional argument describing which parts of the dataset to load. For instance, `numbers=[5, 7]` loads only images of 5 and 7. This defaults to None to load the whole dataset. Smaller datasets require less training and hyperparameter tweaking. Note than an extra dimension is added in order to use CNN in keras. As no validation is used, it is possible to concatenate both datasets to obtain a larger training set.
 
 - The functions require an argument input_size, which is the size in pixels of the images, so `input_size=(28, 28)` for the mnist digits.
 
 - Assuming that a model is given (describing the energy), samples from the distribution given by this energy can be obtained with
 
 ```
-langevin_samples(model, n_langevin_steps, step_size, n_samples, input_size, initial_state=None):
+langevin_samples(model, n_langevin_steps, step_size, n_samples, input_size, initial_state=None)
 ```
 
-The second to fourth arguments control the discretized Langevin dynamics: the number of steps, the discretization parameter, and the number of samples obtained.
+The second to fourth arguments control the discretized Langevin dynamics: the number of steps, the discretization parameter, and the number of samples obtained. `initial_state` can be any numpy array of the correct size, or defaults to a uniform distribution in $[0,1]$.
 
-initial_state can be any numpy array of the correct size, or defaults to a uniform distribution in $[0,1]$.
-
-- train_model
-
-Train the model with
+- Create a keras model (see an example in training_script.py), and train it with
 
 ```
-train_model(model, x_train, input_size, batch_size, n_epochs, #learning_rate,  
-        reg_param, optimizer, n_langevin_steps, step_size, n_samples, use_cd=False, print_grad=True):
+train_model(model, x_train, batch_size, n_epochs, optimizer, reg_param, input_size,
+        n_langevin_steps, step_size, n_samples, use_cd, print_grad)
 ```
 
+The arguments `n_langevin_steps`, `step_size`, `n_samples` control the discretized Langevin dynamics used to estimate the negative part of the gradient.
 
+To use Contrastive Divergence, set `use_cd = True`. In this case, the Langevin samples are initialized using the data of the batch and n_samples is set to batch_size.
 
+Set `print_grad=True` to print the $$l^2$$-norm of the gradient. If the model distribution is exactly that of the data, there will be no gradient in expectation. Experimentally, probably due to the architecture of the model, the norm first increases quite a lot, and when ti statibilizes, some fairly good samples can be obtained.
 
-Create a keras model.
-
-- Train it with
-
-$ train(model, learning_rate, n_epochs, n_langevin_steps, eps, n_samples)
-
-The 3 last arguments control the discretized Langevin dynamics: the number of steps, the discretization parameter, and the number of samples used to estimate the gradient.
-
-- Once the model is trained, you can obtain new samples with
-
-$ create_samples(model, n_langevin_steps, eps, n_samples, show_sanples)
-
-The number of samples can be an int or a couple of int. If True (default), the last argument displays the samples obtained, in the shape given by n_samples (a row if n_samples is an int).
+- Once the model is trained, enjoy your new digits with
+````
+samples = langevin_samples(model, n_langevin_steps, step_size, n_samples, input_size, initial_state=None)
+plt.imshow(samples[i], cmap='gray') #Where i is any number in range(n_samples).
+````
 
 - It is also possible to obtain samples at different steps of the Langevin dynamics in order to see the evolution. To this end, use
-
-$create_sequential_samples(models, eps, n_samples, n_steps, show_samples)
-
-n_steps controls the number of steps between each sample.
+```
+samples = sequential_langevin_samples(model, 20, 10, 0.01, input_size)
+```
 
 ## References
 <a id="1">[1]</a>

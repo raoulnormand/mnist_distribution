@@ -77,7 +77,7 @@ def train_model(model, x_train, input_size, batch_size, n_epochs,
     _n_langevin_steps, step_size, n_samples: as for the
     langevin_samples function
     _use_cd: whether to use Contrastive Divergence. In this case,
-    the Langevin samples are initialized using the data of the batch,
+    the Langevin samples are initialized using the data of the batch
     and n_samples is set to batch_size.
     _print_grad: whether to print the l2 norm of the gradient.
     """
@@ -103,15 +103,15 @@ def train_model(model, x_train, input_size, batch_size, n_epochs,
                 samples = langevin_samples(model, n_langevin_steps, step_size,
                 n_samples=batch_size, input_size=input_size, initial_state=batch.numpy())
             else:
-                samples = langevin_samples(model, n_langevin_steps, 
+                samples = langevin_samples(model, n_langevin_steps,
                                 step_size, n_samples, input_size)
-            
+
             # Compute the gradient of the energy of the samples
             with tf.GradientTape() as tape:
                 energy_samples = model(samples)
             grad_samples = tape.gradient(energy_samples, model.trainable_weights)
             grad_samples = [g / n_samples for g in grad_samples]
-            
+
             # Make a gradient step
             gradients = [gb - gs for gb, gs in zip(grad_batch, grad_samples)]
             optimizer.apply_gradients(zip(gradients, model.trainable_weights))
@@ -125,3 +125,29 @@ def train_model(model, x_train, input_size, batch_size, n_epochs,
                 print(f"\nStep {step+1}/{x_train.shape[0]//batch_size}")
                 if print_grad:
                     print("l2 norm gradient", [tf.norm(g).numpy() for g in gradients])
+
+# Obtain sequential samples
+
+def sequential_langevin_samples(model, n_steps, n_periods, step_size, input_size, initial_state=None):
+    """
+    Records the evolution of the Langevin dynamic every n_steps for n_periods.
+    """
+    seq_samples = []
+    if initial_state is None:
+        sample = tf.Variable(np.random.rand(1, *input_size, 1), dtype='float32')
+    else:
+        sample = tf.Variable(initial_state, dtype='float32')
+    # Run the diffusion
+    for _ in range(n_periods):
+        for __ in range(n_steps):
+        # Compute the gradient of the energy
+            with tf.GradientTape() as tape:
+                energy_sample = model(sample)
+            grad_sample = tape.gradient(energy_sample, sample)
+            # Update according to the discretized diffusion
+            sample.assign_sub(step_size*grad_sample)
+            sample.assign_add(np.sqrt(2*step_size)*np.random.normal(size=(1, *input_size, 1)))
+            # Clip at 0 and 1 to keep values in the correct range.
+            sample.assign(tf.clip_by_value(sample, clip_value_min=0, clip_value_max=1))
+        seq_samples.append(sample.numpy())
+    return seq_samples
