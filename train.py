@@ -149,5 +149,5 @@ def sequential_langevin_samples(model, n_steps, n_periods, step_size, input_size
             sample.assign_add(np.sqrt(2*step_size)*np.random.normal(size=(1, *input_size, 1)))
             # Clip at 0 and 1 to keep values in the correct range.
             sample.assign(tf.clip_by_value(sample, clip_value_min=0, clip_value_max=1))
-        seq_samples.append(sample.numpy())
+        seq_samples.append(sample[0].numpy())
     return seq_samples
