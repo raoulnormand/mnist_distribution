@@ -2,7 +2,7 @@
 
 - First import the necessary modules.
 
-'''
+```
 import matplotlib.pyplot as plt
 from tensorflow import keras
 from train import langevin_samples, sequential_langevin_samples
