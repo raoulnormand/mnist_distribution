@@ -60,7 +60,7 @@ The arguments `n_langevin_steps`, `step_size`, `n_samples` control the discretiz
 
 To use Contrastive Divergence, set `use_cd = True`. In this case, the Langevin samples are initialized using the data of the batch and n_samples is set to batch_size.
 
-Set `print_grad=True` to print the $$l^2$$-norm of the gradient. If the model distribution is exactly that of the data, there will be no gradient in expectation. Experimentally, probably due to the architecture of the model, the norm first increases quite a lot, and when ti statibilizes, some fairly good samples can be obtained.
+Set `print_grad=True` to print the $l^2$-norm of the gradient. If the model distribution is exactly that of the data, there will be no gradient in expectation. Experimentally, probably due to the architecture of the model, the norm first increases quite a lot, and when ti statibilizes, some fairly good samples can be obtained.
 
 - Once the model is trained, enjoy your new digits with
 ````
